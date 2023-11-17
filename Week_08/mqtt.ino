@@ -1,28 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include <uri/UriBraces.h>
-#include <uri/UriRegex.h>
-ESP8266WebServer server(80);
 bool led_status = false;
 
-const char* html = "<!DOCTYPE html>\n"
-                  "<html>\n"
-                  "  <script>\n"
-                  "    const led = async function(){\n"
-                  "      await fetch('/led')\n"
-                  "    }\n"
-                  "  </script>\n"
-                  "  <head>\n"
-                  "    <title>Home</title>\n"
-                  "  </head>\n"
-                  "  <body>\n"
-                  "    <center><h1>Welcome to ESP8266<h1></center>\n"
-                  "    <center><button id='bt' onclick='led()'>Toggle LED on/off LED</button></center>\n"
-                  "  </body>\n"
-                  "</html>";
+
 
 #include "DHT.h"
 DHT dht(D4, DHT11);
@@ -121,31 +102,9 @@ void setup() {
   client.setCallback(callback);
 
   dht.begin();
-
-  server.on(F("/"), [](){      //V2
-    server.send(200, "text/html", html);
-  });
-
-  server.on(F("/led"), [](){
-    if (led_status){
-      client.publish("led", "1");
-      led_status = false;
-      server.send(200, "text/plain", "Off");
-    }
-    else {
-      client.publish("led", "0");
-      led_status = true;
-      server.send(200, "text/plain", "On");
-    }
-  });
-
-  server.begin();   //V2
-  Serial.println("HTTP server started");
-
 }
 
 void loop() {
-  server.handleClient();
 
   if (!client.connected()) {
     reconnect();
