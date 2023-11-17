@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.2.2/mqtt.min.js"
+    integrity="sha512-I8gBERqrEkyDqbjHj3aymzBVIPFs85vGSzy26+1P5weHzFp8vfJ8dARJz51n3oQ80DTdYn8MbhUiz5UAW2rMxw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    
+    const client = mqtt.connect("mqtt://192.168.240.37:8081")
+    client.on("connect", () => {
+        client.subscribe("led", (err) => console.log(err))
+    })
+
+    client.on("message", (topic, message) => {
+        console.log(message.toString());
+        if (message.toString() == 1) {
+            console.log("congrat!!");
+        }
+    });
+
+    let led_status = false
+    function test() {
+        if (led_status == false) {
+            client.publish("led", "0")
+            led_status = !led_status
+        }else{
+            client.publish("led", "1")
+            led_status = !led_status
+        }
+        
+    }
+</script>
+
+<head>
+    <title>Home</title>
+</head>
+
+<body>
+    <center>
+        <h1>Welcome to ESP8266<h1>
+    </center>
+    <center><button id='bt' onclick='test()'>Toggle LED on/off LED</button></center>
+</body>
+
+</html>
